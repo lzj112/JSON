@@ -1,3 +1,33 @@
+
+# Json::Value Class Reference
+[Json::Value](http://jsoncpp.sourceforge.net/class_json_1_1_value.html#c61bab5a465848b57610379cc07995c3)
+
+# 编译
+
+- 使用`sudo apt-get install libjsoncpp-dev`安装jsoncpp
+
+头文件在`/usr/include/jsoncpp/json`
+静态库在`/usr/lib/x86_64-linux-gnu`
+```
+ubuntu@LZJ:/usr/lib/x86_64-linux-gnu$ ls | grep json
+libfastjson.so.4
+libfastjson.so.4.2.0
+libjsoncpp.a
+libjsoncpp.so
+libjsoncpp.so.1
+libjsoncpp.so.1.7.4
+```
+所以指定静态路径:
+```
+g++ use_jsoncpp.cc -L/usr/lib/x86_64-linux-gnu/ -ljsoncpp 
+```
+
+- 将头文件和源代码放进自己的项目
+
+[源代码](https://github.com/open-source-parsers/jsoncpp)
+需要的源码文件有目录/include/json/下的所有头文件，还有目录/src/lib_json/下的源文件
+>/src/lib_json/ 目录下有个脚本不用,不知道现在作者管理项目目录了没
+
 # Jsoncpp的使用
 
 - Jsoncpp中主要的类：
@@ -32,29 +62,33 @@ Json::Reader的构造函数还允许用户使用特性Features来自定义Json�
 - 删除Json对象
 root.removeMember("key");
 
+- 解析数组
 
-# 编译
-
-- 使用`sudo apt-get install libjsoncpp-dev`安装jsoncpp
-
-头文件在`/usr/include/jsoncpp/json`
-静态库在`/usr/lib/x86_64-linux-gnu`
+1. 简单的数组:
+`[ 1, 2, 3, 4 ]`
+读取到一个Json:Value的对象val中后:
 ```
-ubuntu@LZJ:/usr/lib/x86_64-linux-gnu$ ls | grep json
-libfastjson.so.4
-libfastjson.so.4.2.0
-libjsoncpp.a
-libjsoncpp.so
-libjsoncpp.so.1
-libjsoncpp.so.1.7.4
-```
-所以指定静态路径:
-```
-g++ use_jsoncpp.cc -L/usr/lib/x86_64-linux-gnu/ -ljsoncpp 
+    int sz = val.size();
+    for (int i = 0; i < sz; ++i) {
+        std::cout << val[i].asInt() << std::endl;
+    }
 ```
 
-- 将头文件和源代码放进自己的项目
+2. 数组是某一对象的一部分,有key值
+```
+{
+    "Name": "Morris", 
+    "Skills": [ "Basketball", "Sing", "Play Games", "Program" ] 
+}
+```
+同上,读取到val后
+```
+    int sz = val["Skills"].size();
+    for (int i = 0; i < sz; ++i) {
+        std::cout << val["Skills"][i].asString() << std::endl;
+    }
+```
 
-[源代码](https://github.com/open-source-parsers/jsoncpp)
-需要的源码文件有目录/include/json/下的所有头文件，还有目录/src/lib_json/下的源文件
->/src/lib_json/ 目录下有个脚本不用,不知道现在作者管理项目目录了没
+3. 数组的元素是对象
+这种的其实一般就是包含着上两种情况的一个数组，一层一层来就行了，先获取数组大小，遍历，解析对象，如果对象里还有数组，再继续获取大小遍历
+`use_jsoncpp`代码中`getJsonFromFile`函数读取的`test.json`就是这么个例子

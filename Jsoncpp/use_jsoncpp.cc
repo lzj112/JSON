@@ -15,6 +15,7 @@ int ParseJsonFromString()
     {  
         std::string upload_id = root["uploadid"].asString();  // 访问节点，upload_id = "UP000000"   
         int code = root["code"].asInt();    // 访问节点，code = 100   
+        // cout << "code=" << code << endl;
     }  
 
     // 在json结构中插入json
@@ -34,8 +35,8 @@ int ParseJsonFromString()
     Json::FastWriter writer;  
     std::string out2 = writer.write(root); 
 
-    std::cout << out << std::endl;
-    std::cout << out2 << std::endl;
+    // std::cout << out << std::endl;
+    // std::cout << out2 << std::endl;
 }
 
 //从文件解析json
@@ -54,10 +55,9 @@ Json::Value getJsonFromFile(const char* filename)
         if (!root["files"].isNull())     
         {
             code = root["uploadid"].asString();  
-            cout << "root[\"uploadid\"]=" << code << endl;
         }
             
-        // 访问节点，Return the member named key if it exist, defaultValue otherwise.   
+        // 访问节点 
         code = root.get("uploadid", "null").asString();  
 
         // 得到"files"的数组个数   
@@ -92,12 +92,12 @@ void jsonWriteToFile()
     item["music"] = "ddx";
     arrayObj.append(item);
 
+    //将json对象(数组)赋值给json对象里的数组
     root["name"] = "dsw";
     root["age"]  = 18;
     root["like"] = arrayObj;    //注意:这里不能用append,append功能是将Json::Value添加到数组末尾
 
     auto str = root.toStyledString();
-    std::cout << str << std::endl;
 
     std::ofstream ofss;
     ofss.open("out.json");
@@ -115,21 +115,27 @@ int main()
         Json::Value myjson = getJsonFromFile("test.json");  //利用上面的函数生成一个json。
         int num = myjson["num"].asInt();
         string str = myjson["name"].asString();
+        // cout << "num=" << num << " str=" << str << endl;
     }
 
     {
         //json数组
         Json::Value myjson = getJsonFromFile("test.json");//利用上面的函数生成一个json。
         int i = 0;
-        Json::Value arr = myjson[i]; //获取arr数组的第一个元素
+        Json::Value arr = myjson["files"][i]; //获取arr数组的第一个元素
+        string str = arr.toStyledString();
+        // cout << str << endl;
     }
+
 
     {
         //利用迭代器获取json的key。（有时候并不知道json的key，这个时候可以利用迭代器获取json的key）
         Json::Value myjson = getJsonFromFile("test.json");//利用上面的函数生成一个json。
-        Json::Value::Members members(myjson.getMemberNames());
-        for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)  {
-        const std::string &key = *it;
+        Json::Value::Members members(myjson.getMemberNames());  //返回成员名称列表
+        for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)  
+        {
+            const std::string &key = *it;
+            cout << key << endl;
         }
     }
 
@@ -145,4 +151,5 @@ int main()
         Json::Value arr2;
         arr2["array"] = arr;
     }
+    
 }

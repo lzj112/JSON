@@ -1,6 +1,7 @@
 {  
     "uploadid": "UP000000",  
-    "code": "0",  
+    "num": 99, 
+    "name": "LZJ", 
     "msg": "",  
     "files":  
     [  
